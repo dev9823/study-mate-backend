@@ -71,7 +71,7 @@ class GoogleAPI(PublicAPI):
             new_user = User.objects.create_user(
                 email=user_email,
                 first_name=user_info["given_name"],
-                last_name=user_info["family_name"],
+                last_name=user_info.get("family_name"),
             )
 
             refresh = RefreshToken.for_user(new_user)

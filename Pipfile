@@ -12,6 +12,7 @@ requests = "*"
 oauthlib = "*"
 djangorestframework-simplejwt = "*"
 pyjwt = "*"
+drf-nested-routers = "*"
 
 [dev-packages]
 
