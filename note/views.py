@@ -1,4 +1,6 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from .serializers import LessonSerializer, SubjectSerializer
 from .models import Lesson, Subject
@@ -7,6 +9,8 @@ from .models import Lesson, Subject
 class SubjectViewSet(ModelViewSet):
     serializer_class = SubjectSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ["title"]
 
     def get_queryset(self):
         user_id = self.request.user.id
@@ -20,6 +24,8 @@ class SubjectViewSet(ModelViewSet):
 class LessonViewSet(ModelViewSet):
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ["title"]
 
     def get_queryset(self):
         user_id = self.request.user.id

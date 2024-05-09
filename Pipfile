@@ -13,6 +13,7 @@ oauthlib = "*"
 djangorestframework-simplejwt = "*"
 pyjwt = "*"
 drf-nested-routers = "*"
+django-filter = "*"
 
 [dev-packages]
 
