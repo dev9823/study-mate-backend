@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "django_filters",
     "core",
     "note",
+    "exams",
 ]
 
 MIDDLEWARE = [
@@ -139,3 +140,6 @@ GOOGLE_OAUTH2_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH2_CLIENT_SECRET")
 GOOGLE_OAUTH2_PROJECT_ID = os.environ.get("GOOGLE_OAUTH2_PROJECT_ID")
 
 BASE_BACKEND_URL = "http://127.0.0.1:8000"
+
+
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
