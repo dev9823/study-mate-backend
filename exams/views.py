@@ -1,4 +1,5 @@
 from django.conf import settings
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from note.models import Lesson
@@ -10,6 +11,8 @@ genai.configure(api_key=settings.GEMINI_API_KEY)
 
 
 class ExamViewSet(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         generation_config = {
             "temperature": 1,
@@ -67,7 +70,9 @@ class ExamViewSet(APIView):
             },
         ]
 
-        serializer = CreateExamSerializer(data=request.data)
+        serializer = CreateExamSerializer(
+            data=request.data, context={"user_id": request.user.id}
+        )
         serializer.is_valid(raise_exception=True)
         lesson_id = serializer.validated_data.get("lesson_id")
         question_type = serializer.get_question_type_display()

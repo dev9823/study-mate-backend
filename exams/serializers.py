@@ -22,7 +22,8 @@ class CreateExamSerializer(serializers.Serializer):
     lesson_id = serializers.IntegerField()
 
     def validate_lesson_id(self, value):
-        if not Lesson.objects.filter(id=value).exists():
+        user_id = self.context.get("user_id")
+        if not Lesson.objects.filter(id=value, subject__user_id=user_id).exists():
             raise serializers.ValidationError("Lesson doesn't exists")
         return value
 
