@@ -43,3 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
+
+
+class OAuthSession(models.Model):
+    session = models.CharField(max_length=100)

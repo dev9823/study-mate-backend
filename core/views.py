@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from .service import GoogleRawFlowService
 from .serializers import GoogleAPISerializer
-from .models import User
+from .models import OAuthSession, User
 
 
 class PublicAPI(APIView):
@@ -18,9 +18,7 @@ class GoogleRedirectAPI(PublicAPI):
     def get(self, request, *args, **kwargs):
         google_flow = GoogleRawFlowService()
         authorization_url, state = google_flow.get_authorization_url()
-
-        request.session["google_oauth2_state"] = state
-
+        oauth_session = OAuthSession.objects.create(session=state)
         return redirect(authorization_url)
 
 
@@ -44,19 +42,14 @@ class GoogleAPI(PublicAPI):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        session_state = request.session.get("google_oauth2_state")
-
-        if session_state is None:
+        try:
+            oauth_session = OAuthSession.objects.get(session=state)
+        except OAuthSession.DoesNotExist:
             return Response(
-                {"error": "CSRF check field."}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Session state not found."},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-
-        del request.session["google_oauth2_state"]
-
-        if state != session_state:
-            return Response(
-                {"error": "CSRF check field"}, status=status.HTTP_400_BAD_REQUEST
-            )
+        oauth_session.delete()
 
         google_flow = GoogleRawFlowService()
         google_tokens = google_flow.get_tokens(code=code)
@@ -68,10 +61,13 @@ class GoogleAPI(PublicAPI):
         user = User.objects.filter(email=user_email).first()
 
         if user is None:
+            last_name = (
+                user_info.get("family_name") if user_info.get("family_name") else ""
+            )
             new_user = User.objects.create_user(
                 email=user_email,
                 first_name=user_info["given_name"],
-                last_name=user_info.get("family_name"),
+                last_name=last_name,
             )
 
             refresh = RefreshToken.for_user(new_user)

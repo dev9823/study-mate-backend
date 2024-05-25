@@ -49,14 +49,8 @@ class GoogleRawFlowService:
         state = "".join(rand.choice(chars) for _ in range(length))
         return state
 
-    def _get_redirect_uri(self):
-        domain = settings.BASE_BACKEND_URL
-        api_uri = self.API_URI
-        redirect_uri = f"{domain}{api_uri}"
-        return redirect_uri
-
     def get_authorization_url(self):
-        redirect_uri = self._get_redirect_uri()
+        redirect_uri = settings.OAUTH_REDIRECT_URI
         state = self._generate_state_session_token()
 
         params = {
@@ -75,7 +69,7 @@ class GoogleRawFlowService:
         return authorization_url, state
 
     def get_tokens(self, *, code: str) -> GoogleAccessTokens:
-        redirect_uri = self._get_redirect_uri()
+        redirect_uri = settings.OAUTH_REDIRECT_URI
         data = {
             "code": code,
             "client_id": self._credentials.client_id,
